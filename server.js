@@ -27,7 +27,7 @@ function generatePolygon(data, color, distance, x_pos, y_pos, scale, id){
 
     function pointVertex(x, y) { // function that colors data points
         d3.select(overlay.node()).append("rect")
-            .style('fill', 'black') 
+            .style('fill', 'black')
             .attr("x", x)
             .attr("y", y)
             .attr("width", 0.005)
@@ -38,17 +38,17 @@ function generatePolygon(data, color, distance, x_pos, y_pos, scale, id){
 
     for(i=0; i < poly.length; i++){ // circle vertices
         if(poly.length>3){
-            pointVertex(poly[i][0], poly[i][1]) 
+            pointVertex(poly[i][0], poly[i][1])
         }
-    } 
-    
+    }
+
     poly = d3.polygonHull(poly) // get the polygon hull of the points
 
     var svg = d3.select(overlay.node())
         .append("svg")
         .attr("opacity", 0.6)
         .attr('stroke', color)
-        
+
     svg.append("path") // fill area in of points
         .datum(poly)
         .attr("fill", color)
@@ -62,15 +62,15 @@ function generatePolygon(data, color, distance, x_pos, y_pos, scale, id){
             .x1(function(d) { return d[0] })
             .y(function(d) { return d[1] })
         )
-        .attr("transform", 
+        .attr("transform",
             // move triangle with mouse and apply angle rotation
-            "translate(" + (x_pos) + ", " + (y_pos) + ")," + 
-            "rotate("+ (distance[1] - 45) +")," + 
+            "translate(" + (x_pos) + ", " + (y_pos) + ")," +
+            "rotate("+ (distance[1] - 45) +")," +
             'scale(' + scale + ')'
             )
 
     if(data.length <= 3){ // make triangles on svg disappear
-        if(distance[0] < 0.15){
+        if(distance[0] < 0.09){
             svg.attr('opacity', 0)
         }
     }
@@ -112,16 +112,10 @@ var poly3 = [
 ]
 
 
-triangleData = [
+triangleData = [ // data points for tracking triangles
     [0.02, 0.03],
     [0.05, 0.03],
     [0, 0]
-]
-
-triangleData2 = [
-    [0.02, 0.03],
-    [0.08, 0.03],
-    [0, 0.05]
 ]
 
 
@@ -149,20 +143,35 @@ var tracker = new OpenSeadragon.MouseTracker({ // init osd mouse tracking
             .attr("cy", 0)
             .attr('opacity', 0.2)
             // move circle with cursor
-            .attr("transform", 
+            .attr("transform",
                 "translate(" + viewportPoint.x + ", " + viewportPoint.y + ")")
-    
-            // console.log(createTriangle(viewportPoint.x, viewportPoint.y, t1, "triangleTracker1", triangleData, color1, 0, 0.08))
-            createTriangle(viewportPoint.x, viewportPoint.y, t1, "triangleTracker1", triangleData, color1, 0, 0.08)
-            createTriangle(viewportPoint.x, viewportPoint.y, t2, "triangleTracker2", triangleData, color2, 0.04, -0.04)
-            createTriangle(viewportPoint.x, viewportPoint.y, t3, "triangleTracker3", triangleData, color3, -0.08, 0)
+
+            // console.log(createTriangle(viewportPoint.x, viewportPoint.y, t1, "triangleTracker1", triangleData, color1, 0, 0.08)[0])
+            createTriangle(viewportPoint.x, viewportPoint.y, t1, "triangleTracker1", triangleData, 'red', 0, 0.07)
+            createTriangle(viewportPoint.x, viewportPoint.y, t2, "triangleTracker2", triangleData, 'blue', 0.03, 0)
+            createTriangle(viewportPoint.x, viewportPoint.y, t3, "triangleTracker3", triangleData, 'green', -0.07, -0.07)
     }
-});  
+});
 
 function createTriangle(x_position, y_position, polygon, id, data, color, transform_x, transform_y){
 
     distance = getDistance(x_position, y_position, polygon) // get the distance and angle to centroid
-    
+
+    if(transform_x > 0){
+        transform_x = distance[0]/10 + transform_x
+    } else { 
+        transform_x = transform_x - distance[0]/10 
+    }
+
+    if(transform_y > 0){
+        transform_y = distance[0]/10 + transform_y
+    } else { 
+        transform_y = -distance[0]/10 - transform_y
+    }
+
+    // transform_x = distance[0]/10 + transform_x // make transform proportional to distance to avoid triangle in lens
+    // transform_y = distance[0]/10 + transform_y
+
     d3.select("#" + id).remove() // delete the used polygons (prevents trailing triangles)
 
     scale = distance[0] * 2.5 // scale the triangle based on distance to centroid
@@ -173,12 +182,12 @@ function createTriangle(x_position, y_position, polygon, id, data, color, transf
 }
 
 
-function getDistance(cursor_x, cursor_y, centroid){ 
+function getDistance(cursor_x, cursor_y, centroid){
     // distance from cursor to point
     distance = Math.sqrt(Math.pow((cursor_x - centroid[0]), 2) + (Math.pow((cursor_y - centroid[1]), 2)))
 
     // angle from cursor to point
     angle = (Math.atan((cursor_y - centroid[1])/(cursor_x - centroid[0]))) * (180 / Math.PI)
-    
+
     return([distance, angle])
 }
