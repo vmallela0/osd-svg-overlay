@@ -147,9 +147,9 @@ var tracker = new OpenSeadragon.MouseTracker({ // init osd mouse tracking
                 "translate(" + viewportPoint.x + ", " + viewportPoint.y + ")")
 
             // console.log(createTriangle(viewportPoint.x, viewportPoint.y, t1, "triangleTracker1", triangleData, color1, 0, 0.08)[0])
-            createTriangle(viewportPoint.x, viewportPoint.y, t1, "triangleTracker1", triangleData, 'red', 0, 0.07)
-            createTriangle(viewportPoint.x, viewportPoint.y, t2, "triangleTracker2", triangleData, 'blue', 0.03, 0)
-            createTriangle(viewportPoint.x, viewportPoint.y, t3, "triangleTracker3", triangleData, 'green', -0.07, -0.07)
+            createTriangle(viewportPoint.x, viewportPoint.y, t1, "triangleTracker1", triangleData, color1, 0, 0.07)
+            createTriangle(viewportPoint.x, viewportPoint.y, t2, "triangleTracker2", triangleData, color2, 0.03, 0)
+            createTriangle(viewportPoint.x, viewportPoint.y, t3, "triangleTracker3", triangleData, color3, -0.07, -0.07)
     }
 });
 
